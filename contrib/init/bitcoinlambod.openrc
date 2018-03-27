@@ -1,0 +1,92 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/bitcoinlambo/.bitcoinlambo" ]; then
+	BITCOINLAMBOD_DEFAULT_DATADIR="/var/lib/bitcoinlambo/.bitcoinlambo"
+else
+	BITCOINLAMBOD_DEFAULT_DATADIR="/var/lib/bitcoinlambod"
+fi
+
+BITCOINLAMBOD_CONFIGFILE=${BITCOINLAMBOD_CONFIGFILE:-/etc/bitcoinlambo/bitcoinlambo.conf}
+BITCOINLAMBOD_PIDDIR=${BITCOINLAMBOD_PIDDIR:-/var/run/bitcoinlambod}
+BITCOINLAMBOD_PIDFILE=${BITCOINLAMBOD_PIDFILE:-${BITCOINLAMBOD_PIDDIR}/bitcoinlambod.pid}
+BITCOINLAMBOD_DATADIR=${BITCOINLAMBOD_DATADIR:-${BITCOINLAMBOD_DEFAULT_DATADIR}}
+BITCOINLAMBOD_USER=${BITCOINLAMBOD_USER:-${BITCOINLAMBO_USER:-bitcoinlambo}}
+BITCOINLAMBOD_GROUP=${BITCOINLAMBOD_GROUP:-bitcoinlambo}
+BITCOINLAMBOD_BIN=${BITCOINLAMBOD_BIN:-/usr/bin/bitcoinlambod}
+BITCOINLAMBOD_NICE=${BITCOINLAMBOD_NICE:-${NICELEVEL:-0}}
+BITCOINLAMBOD_OPTS="${BITCOINLAMBOD_OPTS:-${BITCOINLAMBO_OPTS}}"
+
+name="BitcoinLambo Core Daemon"
+description="BitcoinLambo cryptocurrency P2P network daemon"
+
+command="/usr/bin/bitcoinlambod"
+command_args="-pid=\"${BITCOINLAMBOD_PIDFILE}\" \
+		-conf=\"${BITCOINLAMBOD_CONFIGFILE}\" \
+		-datadir=\"${BITCOINLAMBOD_DATADIR}\" \
+		-daemon \
+		${BITCOINLAMBOD_OPTS}"
+
+required_files="${BITCOINLAMBOD_CONFIGFILE}"
+start_stop_daemon_args="-u ${BITCOINLAMBOD_USER} \
+			-N ${BITCOINLAMBOD_NICE} -w 2000"
+pidfile="${BITCOINLAMBOD_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${BITCOINLAMBOD_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${BITCOINLAMBOD_USER}:${BITCOINLAMBOD_GROUP}" \
+	"${BITCOINLAMBOD_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${BITCOINLAMBOD_USER}:${BITCOINLAMBOD_GROUP}" \
+	"${BITCOINLAMBOD_PIDDIR}"
+
+	checkpath -f \
+	-o ${BITCOINLAMBOD_USER}:${BITCOINLAMBOD_GROUP} \
+	-m 0660 \
+	${BITCOINLAMBOD_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${BITCOINLAMBOD_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run bitcoinlambod."
+		eerror "The setting must appear in ${BITCOINLAMBOD_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following"
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is also recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"BitcoinLambo Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

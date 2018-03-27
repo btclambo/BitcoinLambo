@@ -1,0 +1,33 @@
+# /etc/conf.d/bitcoinlambod: config file for /etc/init.d/bitcoinlambod
+
+# Config file location
+#BITCOINLAMBOD_CONFIGFILE="/etc/bitcoinlambo/bitcoinlambo.conf"
+
+# What directory to write pidfile to?  (created and owned by $BITCOINLAMBOD_USER)
+#BITCOINLAMBOD_PIDDIR="/var/run/bitcoinlambod"
+
+# What filename to give the pidfile
+#BITCOINLAMBOD_PIDFILE="${BITCOINLAMBOD_PIDDIR}/bitcoinlambod.pid"
+
+# Where to write bitcoinlambod data (be mindful that the blockchain is large)
+#BITCOINLAMBOD_DATADIR="/var/lib/bitcoinlambod"
+
+# User and group to own bitcoinlambod process
+#BITCOINLAMBOD_USER="bitcoinlambo"
+#BITCOINLAMBOD_GROUP="bitcoinlambo"
+
+# Path to bitcoinlambod executable
+#BITCOINLAMBOD_BIN="/usr/bin/bitcoinlambod"
+
+# Nice value to run bitcoinlambod under
+#BITCOINLAMBOD_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#BITCOINLAMBOD_OPTS=""
+
+# The timeout in seconds OpenRC will wait for bitcoinlambod to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+BITCOINLAMBOD_SIGTERM_TIMEOUT=60

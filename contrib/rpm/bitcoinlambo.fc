@@ -1,0 +1,8 @@
+/usr/bin/bitcoinlambo-cli		--	gen_context(system_u:object_r:bitcoinlambo_exec_t,s0)
+/usr/sbin/bitcoinlambod		--	gen_context(system_u:object_r:bitcoinlambo_exec_t,s0)
+/usr/lib(64)?/bitcoinlambo/bitcoinlambod		--	gen_context(system_u:object_r:bitcoinlambo_exec_t,s0)
+
+/etc/bitcoinlambo(/.*)?		gen_context(system_u:object_r:bitcoinlambo_conf_t,s0)
+/var/lib/bitcoinlambo(/.*)?		gen_context(system_u:object_r:bitcoinlambo_var_lib_t,s0)
+
+(/var)?/run/bitcoinlambod(/.*)?   gen_context(system_u:object_r:bitcoinlambo_var_run_t,s0)

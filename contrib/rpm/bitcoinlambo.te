@@ -1,0 +1,81 @@
+policy_module(bitcoinlambo, 1.100.1)
+
+########################################
+#
+# Declarations
+#
+
+type bitcoinlambo_t;
+type bitcoinlambo_exec_t;
+init_daemon_domain(bitcoinlambo_t, bitcoinlambo_exec_t)
+
+permissive bitcoinlambo_t;
+
+type bitcoinlambo_initrc_exec_t;
+init_script_file(bitcoinlambo_initrc_exec_t)
+
+type bitcoinlambo_conf_t;
+files_type(bitcoinlambo_conf_t)
+
+type bitcoinlambo_var_lib_t;
+files_type(bitcoinlambo_var_lib_t)
+
+type bitcoinlambo_var_run_t;
+files_type(bitcoinlambo_var_run_t)
+
+type bitcoinlambo_port_t;
+corenet_port(bitcoinlambo_port_t)
+
+########################################
+#
+# bitcoinlambo local policy
+#
+allow bitcoinlambo_t self:process { fork };
+
+allow bitcoinlambo_t self:fifo_file rw_fifo_file_perms;
+allow bitcoinlambo_t self:unix_stream_socket create_stream_socket_perms;
+
+manage_dirs_pattern(bitcoinlambo_t, bitcoinlambo_conf_t, bitcoinlambo_conf_t)
+manage_files_pattern(bitcoinlambo_t, bitcoinlambo_conf_t, bitcoinlambo_conf_t)
+
+manage_dirs_pattern(bitcoinlambo_t, bitcoinlambo_var_lib_t, bitcoinlambo_var_lib_t)
+manage_files_pattern(bitcoinlambo_t, bitcoinlambo_var_lib_t, bitcoinlambo_var_lib_t)
+files_var_lib_filetrans(bitcoinlambo_t, bitcoinlambo_var_lib_t, { dir file })
+
+manage_dirs_pattern(bitcoinlambo_t, bitcoinlambo_var_run_t, bitcoinlambo_var_run_t)
+manage_files_pattern(bitcoinlambo_t, bitcoinlambo_var_run_t, bitcoinlambo_var_run_t)
+
+sysnet_dns_name_resolve(bitcoinlambo_t)
+corenet_all_recvfrom_unlabeled(bitcoinlambo_t)
+
+allow bitcoinlambo_t self:tcp_socket create_stream_socket_perms;
+corenet_tcp_sendrecv_generic_if(bitcoinlambo_t)
+corenet_tcp_sendrecv_generic_node(bitcoinlambo_t)
+corenet_tcp_sendrecv_all_ports(bitcoinlambo_t)
+corenet_tcp_bind_generic_node(bitcoinlambo_t)
+
+gen_require(`
+    type bitcoinlambo_port_t;
+')
+allow bitcoinlambo_t bitcoinlambo_port_t:tcp_socket name_bind;
+
+gen_require(`
+    type bitcoinlambo_port_t;
+')
+allow bitcoinlambo_t bitcoinlambo_port_t:tcp_socket name_connect;
+
+domain_use_interactive_fds(bitcoinlambo_t)
+
+files_read_etc_files(bitcoinlambo_t)
+
+miscfiles_read_localization(bitcoinlambo_t)
+
+sysnet_dns_name_resolve(bitcoinlambo_t)
+
+allow bitcoinlambo_t bitcoinlambo_exec_t:file execute_no_trans;
+allow bitcoinlambo_t self:process setsched;
+corecmd_exec_ls(bitcoinlambo_t)
+corenet_tcp_connect_http_port(bitcoinlambo_t)
+dev_read_urand(bitcoinlambo_t)
+fs_getattr_xattr_fs(bitcoinlambo_t)
+kernel_read_system_state(bitcoinlambo_t)

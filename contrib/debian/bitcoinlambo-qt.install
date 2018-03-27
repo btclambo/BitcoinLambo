@@ -1,0 +1,6 @@
+usr/local/bin/bitcoinlambo-qt usr/bin
+share/pixmaps/bitcoinlambo32.xpm usr/share/pixmaps
+share/pixmaps/bitcoinlambo16.xpm usr/share/pixmaps
+share/pixmaps/bitcoinlambo128.png usr/share/pixmaps
+debian/bitcoinlambo-qt.desktop usr/share/applications
+debian/bitcoinlambo-qt.protocol usr/share/kde4/services/

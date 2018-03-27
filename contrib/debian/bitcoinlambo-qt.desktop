@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=BitcoinLambo Core
+Comment=Connect to the BitcoinLambo P2P Network
+Comment[de]=Verbinde mit dem BitcoinLambo peer-to-peer Netzwerk
+Comment[fr]=BitcoinLambo, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=BitcoinLambo, eşten eşe kriptografik sanal para birimi
+Exec=bitcoinlambo-qt %u
+Terminal=false
+Type=Application
+Icon=bitcoinlambo128
+MimeType=x-scheme-handler/bitcoinlambo;
+Categories=Office;Finance;

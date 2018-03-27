@@ -1,0 +1,11 @@
+[Protocol]
+exec=bitcoinlambo-qt '%u'
+protocol=bitcoinlambo
+input=none
+output=none
+helper=true
+listing=
+reading=false
+writing=false
+makedir=false
+deleting=false
